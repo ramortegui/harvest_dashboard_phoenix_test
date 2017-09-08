@@ -1,0 +1,23 @@
+<h2>Show Organization</h2>
+
+<ul>
+
+  <li>
+    <strong>Username:</strong>
+    <%= @organization.username %>
+  </li>
+
+  <li>
+    <strong>Password:</strong>
+    <%= @organization.password %>
+  </li>
+
+  <li>
+    <strong>Subdomain:</strong>
+    <%= @organization.subdomain %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: organization_path(@conn, :edit, @organization) %></span>
+<span><%= link "Back", to: organization_path(@conn, :index) %></span>

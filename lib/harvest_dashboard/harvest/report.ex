@@ -6,11 +6,11 @@ defmodule Harvest.Report do
   def new, do: %Harvest.Report{}
 
   def structured_report(organizations, from \\ '20160101' , to \\ '20161231'  ) when is_list(organizations) do
-    Enum.map(
+    pmap(
               organizations, 
               fn(org) ->
                 report_hash = %{}
-                report_list = Enum.map([:"account/who_am_i", :clients, :people, :tasks , :projects], fn(resource)->  
+                report_list = pmap([:"account/who_am_i", :clients, :people, :tasks , :projects], fn(resource)->  
                   result = ClientApi.new 
                     |> ClientApi.headers 
                     |> ClientApi.config(org, Atom.to_string(resource)) 
@@ -33,7 +33,7 @@ defmodule Harvest.Report do
                   end
                 end)
 
-              entries = Enum.map(company_report[:projects], fn(proy) -> 
+              entries = pmap(company_report[:projects], fn(proy) -> 
                 ClientApi.new 
                 |> ClientApi.headers 
                 |> ClientApi.config(org,"projects/#{proy["project"]["id"]}/entries?from=#{from}&to=#{to}") 
@@ -53,7 +53,7 @@ defmodule Harvest.Report do
       projects = convert_to_hash(:projects, company_report)
       organization = convert_to_hash(:"account/who_am_i", company_report)
 
-      acc  = [ acc | Enum.map(company_report[:entries],fn(entry)-> 
+      acc  = [ acc | pmap(company_report[:entries],fn(entry)-> 
         day_entry = entry["day_entry"]
         project_id = projects[day_entry["project_id"]]["id"]
         client_id = projects[day_entry["project_id"]]["client_id"]

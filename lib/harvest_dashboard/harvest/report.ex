@@ -46,14 +46,14 @@ defmodule Harvest.Report do
   end
 
   def detailed_report(structured_report) do
-    Enum.reduce(structured_report,fn(company_report, acc)-> 
+    Enum.reduce(structured_report,[],fn(company_report, acc)-> 
       clients = convert_to_hash(:clients, company_report)
       people = convert_to_hash(:people, company_report) 
       tasks = convert_to_hash(:tasks, company_report) 
       projects = convert_to_hash(:projects, company_report)
       organization = convert_to_hash(:"account/who_am_i", company_report)
 
-      Enum.map(company_report[:entries],fn(entry)-> 
+      acc  = [ acc | Enum.map(company_report[:entries],fn(entry)-> 
         day_entry = entry["day_entry"]
         project_id = projects[day_entry["project_id"]]["id"]
         client_id = projects[day_entry["project_id"]]["client_id"]
@@ -67,9 +67,11 @@ defmodule Harvest.Report do
           "hours" => day_entry["hours"],
           "organization" => company_report[:"account/who_am_i"]["company"]["name"]
         }
-      end)
+      end) ]
+
 
     end)
+    |> List.flatten
   end
 
 

@@ -39,21 +39,36 @@ defmodule Harvest.Report do
                 |> ClientApi.config(org,"projects/#{proy["project"]["id"]}/entries?from=#{from}&to=#{to}") 
                 |> ClientApi.request 
                 |> ClientApi.parse_response 
-              end)
+              end) |> List.flatten
 
               Map.put(company_report, :entries, entries)
               end)
   end
 
   def detailed_report(structured_report) do
-    Enum.each(structured_report,fn(company_report)-> 
+    Enum.reduce(structured_report,fn(company_report, acc)-> 
+      clients = convert_to_hash(:clients, company_report)
+      people = convert_to_hash(:people, company_report) 
+      tasks = convert_to_hash(:tasks, company_report) 
+      projects = convert_to_hash(:projects, company_report)
+      organization = convert_to_hash(:"account/who_am_i", company_report)
 
+      Enum.map(company_report[:entries],fn(entry)-> 
+        day_entry = entry["day_entry"]
+        project_id = projects[day_entry["project_id"]]["id"]
+        client_id = projects[day_entry["project_id"]]["client_id"]
+        %{
+          "date" => day_entry["spent_at"],
+          "project" => projects[project_id]["name"],
+          "client" => clients[client_id]["name"],
+          "project_active" => projects[day_entry["project_id"]]["active"],
+          "task" => tasks[day_entry["task_id"]]["name"],
+          "person" => people[day_entry["user_id"]]["first_name"]<>" "<>people[day_entry["user_id"]]["last_name"],
+          "hours" => day_entry["hours"],
+          "organization" => company_report[:"account/who_am_i"]["company"]["name"]
+        }
+      end)
 
-      #clients = convert_to_hash(:clients, company_report)
-      #people = convert_to_hash(:people, company_report) 
-      #tasks = convert_to_hash(:tasks, company_report) 
-      #projects = convert_to_hash(:projects, company_report)
-       
     end)
   end
 

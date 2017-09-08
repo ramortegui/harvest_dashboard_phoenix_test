@@ -1,4 +1,4 @@
-
+<h2>From <%= @from %> - to: <%= @to %></h2>
         <%= form_for @conn, page_path(@conn, :index),[as: Search], fn f -> %>
             from <%= date_select f, :from %> to
             <%= date_select f, :to%>

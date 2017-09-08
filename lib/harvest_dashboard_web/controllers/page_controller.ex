@@ -33,6 +33,6 @@ defmodule HarvestDashboardWeb.PageController do
     detailed_report = Harvest.Report.structured_report(organizations,from,to) 
                       |> Harvest.Report.detailed_report
 
-    render conn, "index.html", entries: detailed_report 
+    render conn, "index.html", entries: detailed_report , from: from, to: to
   end
 end

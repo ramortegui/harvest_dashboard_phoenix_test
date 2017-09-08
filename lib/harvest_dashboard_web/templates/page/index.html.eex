@@ -1,3 +1,10 @@
+
+        <%= form_for @conn, page_path(@conn, :index),[as: Search], fn f -> %>
+            from <%= date_select f, :from %> to
+            <%= date_select f, :to%>
+              <%= submit "Search" %>
+            <% end %>
+
 Group by: <select class="group_by">
   <option value=1>Organization</option>
   <option value=0 selected>Date</option>
